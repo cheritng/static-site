@@ -3,11 +3,15 @@
   "version": "1.0.0",
   "description": "Simple static site with blog",
   "scripts": {
-    "build": "node scripts/build.js"
+    "build": "node scripts/build.js",
+    "dev": "npm run build && live-server dist --entry-file=index.html"
   },
   "dependencies": {
-    "marked": "^9.0.0",
     "front-matter": "^4.0.2",
-    "fs-extra": "^11.1.1"
+    "fs-extra": "^11.3.0",
+    "marked": "^9.1.6"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
   }
-} 
+}
