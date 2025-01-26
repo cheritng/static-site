@@ -55,6 +55,12 @@ async function build() {
         console.log('Copying public files...');
         await fs.copy(PUBLIC_DIR, OUTPUT_DIR);
         
+        // Explicitly copy CSS directory
+        const cssDir = path.join(PUBLIC_DIR, 'css');
+        const distCssDir = path.join(OUTPUT_DIR, 'css');
+        await fs.ensureDir(distCssDir);
+        await fs.copy(cssDir, distCssDir);
+        
         // Build pages from markdown (excluding index)
         const pagesDir = path.join(CONTENT_DIR, 'pages');
         
