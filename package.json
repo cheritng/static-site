@@ -1,0 +1,13 @@
+{
+  "name": "static-site",
+  "version": "1.0.0",
+  "description": "Simple static site with blog",
+  "scripts": {
+    "build": "node scripts/build.js"
+  },
+  "dependencies": {
+    "marked": "^9.0.0",
+    "front-matter": "^4.0.2",
+    "fs-extra": "^11.1.1"
+  }
+} 
