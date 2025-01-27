@@ -2,6 +2,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const frontMatter = require('front-matter');
 const { marked } = require('marked');
+const config = require('../config');
 
 // Configure paths
 const CONTENT_DIR = path.join(__dirname, '../content');
@@ -40,6 +41,10 @@ function wrapHTML(content, title) {
 </html>`;
 }
 
+function adjustPathsForProduction(html) {
+    return html.replace(/%%BASE_PATH%%/g, config.basePath);
+}
+
 async function build() {
     try {
         console.log('Starting build process...');
@@ -52,17 +57,16 @@ async function build() {
         // Clean output directory
         await fs.emptyDir(OUTPUT_DIR);
         
-        // Copy all public files first (including index.html)
+        // Copy all public files
         console.log('Copying public files...');
-        await fs.copy(PUBLIC_DIR, OUTPUT_DIR);
+        await fs.copy(PUBLIC_DIR, OUTPUT_DIR, {
+            filter: (src) => {
+                // Don't skip any files during copy
+                return true;
+            }
+        });
         
-        // Explicitly copy CSS directory
-        const cssDir = path.join(PUBLIC_DIR, 'css');
-        const distCssDir = path.join(OUTPUT_DIR, 'css');
-        await fs.ensureDir(distCssDir);
-        await fs.copy(cssDir, distCssDir);
-        
-        // Build pages from markdown (excluding index)
+        // Process markdown pages
         const pagesDir = path.join(CONTENT_DIR, 'pages');
         
         try {
@@ -74,12 +78,6 @@ async function build() {
                     const { attributes, body } = frontMatter(content);
                     const htmlContent = marked(body);
                     
-                    // Skip if this is meant to be index.html
-                    if (file === 'index.md') {
-                        console.log('Skipping index.md as index.html is managed directly');
-                        continue;
-                    }
-                    
                     // Create directory for the page (without .md extension)
                     const pageName = file.replace('.md', '');
                     const pageDir = path.join(OUTPUT_DIR, pageName);
@@ -87,17 +85,20 @@ async function build() {
                     
                     // Write index.html in the page directory
                     const outputPath = path.join(pageDir, 'index.html');
-                    await fs.writeFile(outputPath, wrapHTML(htmlContent, attributes.title));
+                    await fs.writeFile(outputPath, adjustPathsForProduction(wrapHTML(htmlContent, attributes.title)));
                     console.log(`Processed: ${file} -> ${pageName}/index.html`);
                 }
             }
         } catch (error) {
-            console.error('Error processing markdown files:', error);
+            if (error.code !== 'ENOENT') {
+                console.error('Error processing markdown files:', error);
+            }
         }
 
         console.log('Build completed successfully!');
     } catch (error) {
         console.error('Build failed:', error);
+        process.exit(1);
     }
 }
 
