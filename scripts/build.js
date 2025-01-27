@@ -42,7 +42,8 @@ function wrapHTML(content, title) {
 }
 
 function adjustPathsForProduction(html) {
-    return html.replace(/%%BASE_PATH%%/g, config.basePath);
+    // Add base path to all relative URLs that don't already have it
+    return html.replace(/(href|src)="\/(?!static-site\/)/g, '$1="/static-site/');
 }
 
 async function build() {
