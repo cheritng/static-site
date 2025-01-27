@@ -66,6 +66,12 @@ async function build() {
             }
         });
         
+        // Copy CSS files
+        await fs.copy(
+            path.join(PUBLIC_DIR, 'css'),
+            path.join(OUTPUT_DIR, 'css')
+        );
+        
         // Ensure index.html is at the root of dist
         const indexHtml = await fs.readFile(path.join(PUBLIC_DIR, 'index.html'), 'utf-8');
         const processedHtml = adjustPathsForProduction(indexHtml);
