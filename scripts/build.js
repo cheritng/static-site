@@ -61,10 +61,14 @@ async function build() {
         console.log('Copying public files...');
         await fs.copy(PUBLIC_DIR, OUTPUT_DIR, {
             filter: (src) => {
-                // Don't skip any files during copy
                 return true;
             }
         });
+        
+        // Ensure index.html is at the root of dist
+        const indexHtml = await fs.readFile(path.join(PUBLIC_DIR, 'index.html'), 'utf-8');
+        const processedHtml = adjustPathsForProduction(indexHtml);
+        await fs.writeFile(path.join(OUTPUT_DIR, 'index.html'), processedHtml);
         
         // Process markdown pages
         const pagesDir = path.join(CONTENT_DIR, 'pages');
@@ -97,7 +101,7 @@ async function build() {
 
         console.log('Build completed successfully!');
     } catch (error) {
-        console.error('Build failed:', error);
+        console.error('Build error:', error);
         process.exit(1);
     }
 }
