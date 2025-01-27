@@ -6,7 +6,7 @@ const config = require('../config');
 
 // Configure paths
 const CONTENT_DIR = path.join(__dirname, '../content');
-const OUTPUT_DIR = path.join(__dirname, '../dist');
+const OUTPUT_DIR = path.join(__dirname, '../docs');
 const PUBLIC_DIR = path.join(__dirname, '../public');
 
 function wrapHTML(content, title) {
@@ -17,17 +17,17 @@ function wrapHTML(content, title) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${title}</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="/static-site/css/style.css">
 </head>
 <body>
     <header>
         <nav>
             <div class="logo">Cheri</div>
             <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/blog">Blog</a></li>
-                <li><a href="/about">About</a></li>
-                <li><a href="/faq">FAQ</a></li>
+                <li><a href="/static-site/">Home</a></li>
+                <li><a href="/static-site/blog">Blog</a></li>
+                <li><a href="/static-site/about">About</a></li>
+                <li><a href="/static-site/faq">FAQ</a></li>
             </ul>
         </nav>
     </header>
@@ -99,6 +99,9 @@ async function build() {
             }
         }
 
+        // Create .nojekyll file in the output directory
+        await fs.writeFile(path.join(OUTPUT_DIR, '.nojekyll'), '');
+        
         console.log('Build completed successfully!');
     } catch (error) {
         console.error('Build error:', error);

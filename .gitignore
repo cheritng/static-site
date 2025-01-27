@@ -1,2 +1,2 @@
 node_modules/
-dist/
+# Remove or comment out any lines that might exclude the docs directory
